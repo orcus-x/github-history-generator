@@ -774,7 +774,7 @@ class GitHubHistoryGenerator:
             os.chdir(original_dir)
 
     def create_commits(self, commit_pattern: Dict[str, int], git_name: str, git_email: str):
-        """Create Git commits based on pattern."""
+        """Create Git commits based on pattern using a single file."""
         repo_path = self.init_repository()
         original_dir = os.getcwd()
         os.chdir(repo_path)
@@ -786,7 +786,10 @@ class GitHubHistoryGenerator:
             sorted_dates = sorted(commit_pattern.items())
             total_commits = sum(num_commits for _, num_commits in sorted_dates)
             current_commit = 0
-
+            
+            # Create a single file to track commits
+            commit_file = 'commit_history.txt'
+            
             for date, num_commits in sorted_dates:
                 for i in range(num_commits):
                     current_commit += 1
@@ -798,9 +801,9 @@ class GitHubHistoryGenerator:
                         hour = random.randint(9, 18)
                         minute = random.randint(0, 59)
                     
-                    commit_file = f'commit_{date}_{i}.txt'
-                    with open(commit_file, 'w') as f:
-                        f.write(f'Commit {current_commit} of {total_commits}\n')
+                    # Update the single file with the new commit information
+                    with open(commit_file, 'a') as f:
+                        f.write(f'Commit {current_commit} of {total_commits} on {date}\n')
                     
                     commit_date = f'{date}T{hour:02d}:{minute:02d}:00'
                     
@@ -810,7 +813,6 @@ class GitHubHistoryGenerator:
                         f'-c user.email="{git_email}" '
                         f'commit --date="{commit_date}" '
                         f'-m "Commit {current_commit}" '
-                        f'--allow-empty'
                     )
 
             print(f"\nCreated {total_commits} commits successfully!")
